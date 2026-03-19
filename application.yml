@@ -1,0 +1,37 @@
+# Shared defaults applied to ALL services via Spring Cloud Config
+# Service-specific overrides live in {application}/application.yml
+
+server:
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  http2:
+    enabled: true
+
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DATABASE:velaris}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  health:
+    mongo:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.velaris: INFO

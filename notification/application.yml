@@ -1,0 +1,26 @@
+# Notification service - centralized config (overrides shared defaults)
+server:
+  port: 9013
+
+kafka:
+  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-notification}
+  notificationsTopic: ${KAFKA_NOTIFICATIONS_TOPIC:velaris-notifications}
+
+hubspot:
+  token: ${HUBSPOT_TOKEN:}
+
+sendgrid:
+  apiKey: ${SENDGRID_API_KEY:}
+  fromEmail: notifications@velarisinsurance.com
+  fromName: Velaris Insurance
+
+twilio:
+  accountSid: ${TWILIO_ACCOUNT_SID:}
+  authToken: ${TWILIO_AUTH_TOKEN:}
+  fromNumber: ${TWILIO_FROM_NUMBER:}
+
+management:
+  server:
+    port: 8094
+  security:
+    enabled: false

@@ -1,0 +1,30 @@
+# Partner API - centralized config (overrides shared defaults)
+issuers: ${COGNITO_ISSUER_URL}
+issuers-keys: ${COGNITO_ISSUER_URL}/.well-known/jwks.json
+audiences: ${COGNITO_AUDIENCE}
+
+server:
+  port: 9012
+
+kafka:
+  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-partner}
+  legacyReservationsTopic: ${KAFKA_RESERVATIONS_TOPIC:velaris-reservations}
+  legacyClaimsTopic: ${KAFKA_CLAIMS_TOPIC:velaris-claims}
+  propertyPoliciesTopic: ${KAFKA_POLICIES_TOPIC:velaris-property-policies}
+
+hubspot:
+  token: ${HUBSPOT_TOKEN:}
+
+lodgify:
+  host: ${LODGIFY_HOST:damage-protection.lodgifyintegration.com}
+  apiKey: ${LODGIFY_API_KEY:}
+
+stripe:
+  sk: ${STRIPE_SECRET_KEY:}
+  pk: ${STRIPE_PUBLISHABLE_KEY:}
+  identity:
+    webhookSecret: ${STRIPE_IDENTITY_WEBHOOK_SECRET:}
+
+management:
+  server:
+    port: 8093

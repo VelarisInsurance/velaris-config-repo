@@ -1,0 +1,20 @@
+# Policy API - centralized config (overrides shared defaults)
+issuers: ${COGNITO_ISSUER_URL}
+issuers-keys: ${COGNITO_ISSUER_URL}/.well-known/jwks.json
+audiences: ${COGNITO_AUDIENCE}
+
+server:
+  port: 9030
+
+kafka:
+  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-policy}
+  propertyPoliciesTopic: ${KAFKA_POLICIES_TOPIC:velaris-property-policies}
+  onboardingCompletedTopic: ${KAFKA_ONBOARDING_COMPLETED_TOPIC:velaris-onboarding-completed}
+
+hubspot:
+  api-key: ${HUBSPOT_API_KEY:}
+  base-url: https://api.hubapi.com
+
+management:
+  server:
+    port: 8095

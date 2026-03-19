@@ -1,0 +1,30 @@
+# Claims API - centralized config (overrides shared defaults)
+issuers: ${COGNITO_ISSUER_URL}
+issuers-keys: ${COGNITO_ISSUER_URL}/.well-known/jwks.json
+audiences: ${COGNITO_AUDIENCE}
+
+server:
+  port: 9020
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+
+kafka:
+  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-claims}
+  legacyClaimsTopic: ${KAFKA_CLAIMS_TOPIC:velaris-claims}
+
+aws:
+  s3:
+    bucket: ${S3_CLAIMS_BUCKET}
+    region: ${AWS_REGION:us-east-1}
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}
+  model: ${ANTHROPIC_MODEL:claude-sonnet-4-6}
+
+management:
+  server:
+    port: 8094

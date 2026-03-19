@@ -1,0 +1,28 @@
+# Onboarding API - centralized config (overrides shared defaults)
+server:
+  port: 9040
+
+kafka:
+  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-onboarding}
+  onboardingCompletedTopic: ${KAFKA_ONBOARDING_COMPLETED_TOPIC:velaris-onboarding-completed}
+
+hubspot:
+  api-key: ${HUBSPOT_API_KEY:}
+  base-url: https://api.hubapi.com
+
+keydata:
+  api-key: ${KEYDATA_API_KEY:}
+  base-url: https://api-enterprise.keydatadashboard.com
+
+boldsign:
+  api-key: ${BOLDSIGN_API_KEY:}
+  base-url: https://api.boldsign.com
+  template-id: ${BOLDSIGN_TEMPLATE_ID:}
+  webhook-secret: ${BOLDSIGN_WEBHOOK_SECRET:}
+
+onboarding:
+  session-ttl-days: 7
+
+management:
+  security:
+    enabled: false
