@@ -25,6 +25,14 @@ stripe:
   identity:
     webhookSecret: ${STRIPE_IDENTITY_WEBHOOK_SECRET:}
 
+velaris:
+  legacy:
+    baseUrl: ${VELARIS_LEGACY_BASEURL:https://legacy-api.test.velaris.com}
+    access_token: ${VELARIS_LEGACY_ACCESS_TOKEN:}
+    access_username: ${VELARIS_LEGACY_ACCESS_USERNAME:partner.api@velaris.com}
+    access_password: ${VELARIS_LEGACY_ACCESS_PASSWORD:}
+  claimLinkTemplate: ${VELARIS_CLAIM_LINK_TEMPLATE:https://claim.test.velaris.com/?claim_token=%s}
+
 management:
   server:
     port: 8093
