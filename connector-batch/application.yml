@@ -1,0 +1,22 @@
+# Velaris Connector Batch - Config Server overrides
+# Environment-specific values are injected via Kubernetes secrets/env vars
+
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DATABASE:velaris}
+
+  batch:
+    job:
+      enabled: false
+
+  cloud:
+    task:
+      table-prefix: BOOT3_TASK_
+
+logging:
+  level:
+    root: INFO
+    com.velaris: INFO
+    reactor.netty.http.client.HttpClient: INFO
