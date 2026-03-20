@@ -15,7 +15,7 @@ keydata:
   base-url: https://api-enterprise.keydatadashboard.com
 
 boldsign:
-  api-key: ${BOLDSIGN_API_KEY:}
+  api-key: ${BOLDSIGN_API_KEY:YWZmMWQ1ZDQtMzM3Ni00M2RjLWE2Y2ItOWYyYWM3ZDhiZjUy}
   base-url: https://api.boldsign.com
   template-id: ${BOLDSIGN_TEMPLATE_ID:}
   webhook-secret: ${BOLDSIGN_WEBHOOK_SECRET:}
