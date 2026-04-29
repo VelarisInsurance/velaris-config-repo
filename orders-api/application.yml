@@ -1,0 +1,12 @@
+# orders API - centralized config (overrides shared defaults)
+# Provides JWT issuer/audience for the velaris-authz library wired in
+# AppConfiguration.java. Without these, Spring fails to resolve
+# ${issuers} placeholder at startup.
+
+issuers: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}
+issuers-keys: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}/.well-known/jwks.json
+audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqef8,4d38h6sca3bnn33fm89pb38kt2,3q49aa6mhrnjhmhcm7ta9uj28k,7537lr2a22tj015gjhb1btsepv}
+
+cognito:
+  user-pool-id: ${COGNITO_USER_POOL_ID:}
+  region: ${AWS_REGION:us-east-1}
