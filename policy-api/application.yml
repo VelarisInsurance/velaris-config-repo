@@ -1,7 +1,7 @@
 # Policy API - centralized config (overrides shared defaults)
 issuers: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}
 issuers-keys: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}/.well-known/jwks.json
-audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqef8,4d38h6sca3bnn33fm89pb38kt2,3q49aa6mhrnjhmhcm7ta9uj28k}
+audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqef8,4d38h6sca3bnn33fm89pb38kt2,3q49aa6mhrnjhmhcm7ta9uj28k,4g0b4tur4t21626l1d4kklocbk,740q1732m5lppmftml59ub2nvi}
 
 server:
   port: 9030
