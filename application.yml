@@ -12,6 +12,14 @@ server:
     enabled: true
 
 spring:
+  # Spring Cloud Bus over Kafka is disabled across all services until MSK
+  # SASL/IAM auth is wired up at the infra layer. With it enabled, services
+  # carrying spring-cloud-starter-bus-kafka default the broker to
+  # localhost:9092 and the AdminClient spams reconnect attempts indefinitely,
+  # delaying startup past the liveness probe deadline. See VEL-* (MSK auth).
+  cloud:
+    bus:
+      enabled: false
   data:
     mongodb:
       uri: ${MONGODB_URI}
