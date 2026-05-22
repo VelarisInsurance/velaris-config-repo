@@ -17,7 +17,7 @@ kafka:
   contractCreatedTopic: velaris.contract-created
   contractUpdatedTopic: velaris.contract-updated
   productSignupTopic: velaris.product-signup
-  onboardingCompletedTopic: velaris.onboarding_completed
+  onboardingCompletedTopic: velaris-onboarding-completed
   propertyEnrollmentsTopic: velaris.property-enrollments
   policyUpdatedTopic: velaris.policy-updated
 
