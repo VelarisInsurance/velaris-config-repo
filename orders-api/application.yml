@@ -10,3 +10,10 @@ audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqe
 cognito:
   user-pool-id: ${COGNITO_USER_POOL_ID:}
   region: ${AWS_REGION:us-east-1}
+
+# Base URL for the velaris-organizations service (contract/product
+# verification). Without this, OrganizationsHttpClient defaults to
+# localhost:9090 and contract checks fail closed, rejecting every order.
+velaris:
+  organizations:
+    baseUrl: http://organizations.velaris.svc.cluster.local:9090
