@@ -24,6 +24,7 @@ Current services tracked here:
 - `onboarding-api`
 - `partner-api`
 - `policy-api`
+- `velaris-flags`
 - `velaris-organizations`
 
 The folder name MUST match the client's `spring.application.name`.
