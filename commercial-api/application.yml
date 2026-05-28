@@ -1,0 +1,29 @@
+# Commercial API - centralized config (overrides shared defaults)
+# Backs the ACORD 125/126/130/140 application wizard.
+issuers: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}
+issuers-keys: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}/.well-known/jwks.json
+audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqef8,4d38h6sca3bnn33fm89pb38kt2,3q49aa6mhrnjhmhcm7ta9uj28k,4g0b4tur4t21626l1d4kklocbk,740q1732m5lppmftml59ub2nvi}
+
+server:
+  port: 9130
+
+kafka:
+  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-commercial}
+  commercialApplicationTopic: ${KAFKA_COMMERCIAL_APPLICATION_TOPIC:velaris-v2-dev.commercial_applications}
+
+management:
+  server:
+    port: 9131
+
+commercial:
+  draft:
+    ttl-days: 30
+    token-secret: ${COMMERCIAL_DRAFT_TOKEN_SECRET:}
+  pdf:
+    s3-bucket: ${COMMERCIAL_PDF_BUCKET:velaris-commercial-pdfs-dev}
+    s3-prefix: applications/
+  boldsign:
+    enabled: ${COMMERCIAL_BOLDSIGN_ENABLED:false}
+    base-url: https://api.boldsign.com
+    api-key: ${COMMERCIAL_BOLDSIGN_API_KEY:}
+    webhook-secret: ${COMMERCIAL_BOLDSIGN_WEBHOOK_SECRET:}
