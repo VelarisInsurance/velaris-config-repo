@@ -15,6 +15,17 @@ management:
   server:
     port: 9131
 
+# Traffic capture is OFF in dev until MSK SASL/IAM is wired (same reason the
+# shared config sets spring.cloud.bus.enabled=false). velaris-traffic-common
+# publishes inbound requests to Kafka SYNCHRONOUSLY on the request thread; with
+# no reachable broker the producer blocks for max.block.ms (60s), which hangs
+# every fully-proceeding request. commercial-api is the first service with a
+# public (permitAll) endpoint — the anonymous /v1/drafts/* wizard flow — so it
+# is the first to surface this. Re-enable once a broker is reachable.
+velaris:
+  traffic:
+    enabled: false
+
 commercial:
   draft:
     ttl-days: 30
