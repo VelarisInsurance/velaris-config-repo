@@ -28,10 +28,16 @@ Current services tracked here:
 - `properties-api`
 - `refundable-api`
 - `reservations-api`
-- `velaris-connector-batch`
-- `velaris-connector-launcher`
 - `velaris-flags`
 - `velaris-organizations`
+
+**Intentionally NOT tracked here:** the SCDF one-shot tasks
+`velaris-connector-batch` and `velaris-connector-launcher`. They are
+configured entirely via environment variables passed at SCDF task launch
+(plus their bundled `application-aws.yml`) and never contact the config
+server — a config-server fetch would add startup latency and an
+availability dependency to every batch run. Do not add folders for them;
+the copies would silently diverge from the values the tasks actually use.
 
 The folder name MUST match the client's *effective* `spring.application.name`.
 Note: no Velaris service has `spring-cloud-starter-bootstrap` on its
