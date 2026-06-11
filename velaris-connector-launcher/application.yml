@@ -1,0 +1,28 @@
+# Velaris Connector Launcher - Config Server overrides
+# Environment-specific values are injected via SCDF task launch env vars
+# (see velaris-connector-launcher README: SCDF registration steps).
+
+spring:
+  cloud:
+    task:
+      table-prefix: BOOT3_TASK_
+
+velaris:
+  scdf:
+    enabled: ${SCDF_ENABLED:true}
+    base-url: ${SCDF_BASE_URL:http://scdf-spring-cloud-dataflow-server.scdf.svc.cluster.local:8080}
+    task-name: ${SCDF_TASK_NAME:connector-batch}
+    token-url: ${COGNITO_M2M_TOKEN_URL:}
+    client-id: ${COGNITO_M2M_CLIENT_ID:}
+    client-secret: ${COGNITO_M2M_CLIENT_SECRET:}
+  connector:
+    launcher:
+      default-interval-hours: ${CONNECTOR_DEFAULT_INTERVAL_HOURS:24}
+      min-spacing-minutes: ${CONNECTOR_MIN_SPACING_MINUTES:30}
+    launch:
+      timeout-minutes: ${CONNECTOR_LAUNCH_TIMEOUT_MINUTES:120}
+
+logging:
+  level:
+    root: INFO
+    com.velaris: INFO

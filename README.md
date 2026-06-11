@@ -20,6 +20,7 @@ Current services tracked here:
 
 - `claims-api`
 - `connector-batch`
+- `velaris-connector-launcher`
 - `notification`
 - `onboarding-api`
 - `partner-api`

@@ -32,6 +32,19 @@ velaris:
     access_username: ${VELARIS_LEGACY_ACCESS_USERNAME:partner.api@velaris.com}
     access_password: ${VELARIS_LEGACY_ACCESS_PASSWORD:}
   claimLinkTemplate: ${VELARIS_CLAIM_LINK_TEMPLATE:https://claim.test.velaris.com/?claim_token=%s}
+  # SCDF launch of connector-batch ("Sync now" admin endpoint). Per-env
+  # values (SCDF_ENABLED, COGNITO_M2M_*) come from the service's Secrets
+  # Manager config secret: velaris/{env}/partner-api/config
+  scdf:
+    enabled: ${SCDF_ENABLED:false}
+    base-url: ${SCDF_BASE_URL:http://scdf-spring-cloud-dataflow-server.scdf.svc.cluster.local:8080}
+    task-name: ${SCDF_TASK_NAME:connector-batch}
+    token-url: ${COGNITO_M2M_TOKEN_URL:}
+    client-id: ${COGNITO_M2M_CLIENT_ID:}
+    client-secret: ${COGNITO_M2M_CLIENT_SECRET:}
+  connector:
+    launch:
+      timeout-minutes: ${CONNECTOR_LAUNCH_TIMEOUT_MINUTES:120}
 
 management:
   server:
