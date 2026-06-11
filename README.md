@@ -19,16 +19,25 @@ velaris-config-repo/
 Current services tracked here:
 
 - `claims-api`
-- `connector-batch`
-- `velaris-connector-launcher`
+- `commercial-api`
 - `notification`
 - `onboarding-api`
+- `orders-api`
 - `partner-api`
 - `policy-api`
+- `properties-api`
+- `refundable-api`
+- `reservations-api`
+- `velaris-connector-batch`
+- `velaris-connector-launcher`
 - `velaris-flags`
 - `velaris-organizations`
 
-The folder name MUST match the client's `spring.application.name`.
+The folder name MUST match the client's *effective* `spring.application.name`.
+Note: no Velaris service has `spring-cloud-starter-bootstrap` on its
+classpath, so `bootstrap.yml` files are ignored — the name that counts is the
+one set in `application.yml` / `application-{profile}.yml` (most services set
+it in `application-aws.yml`, next to the `spring.config.import` line).
 
 ## Branching strategy: folder overlay, not branch-per-environment
 
