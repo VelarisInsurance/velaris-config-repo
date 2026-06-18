@@ -21,6 +21,13 @@ kafka:
   propertyEnrollmentsTopic: velaris.property-enrollments
   policyUpdatedTopic: velaris.policy-updated
 
+boldsign:
+  # E-signature feature flag. When false (default) signup contracts are
+  # auto-signed and velaris.contract-signed is emitted immediately (which drives
+  # downstream wiring such as partner-api KeyData connector provisioning); when
+  # true, the BoldSign e-signature flow drives signing instead.
+  enabled: ${ORGANIZATIONS_BOLDSIGN_ENABLED:false}
+
 hubspot:
   api-key: ${HUBSPOT_API_KEY:}
   base-url: https://api.hubapi.com
