@@ -18,7 +18,7 @@ kafka:
 
 aws:
   s3:
-    bucket: ${S3_CLAIMS_BUCKET:velaris-claims-dev}
+    bucket: ${S3_CLAIMS_BUCKET:velaris-claims-files-dev}
     region: ${AWS_REGION:us-east-1}
 
 anthropic:
