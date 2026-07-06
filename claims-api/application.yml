@@ -28,3 +28,12 @@ anthropic:
 management:
   server:
     port: 8094
+
+# velaris-orders internal claim-lookup surface: resolves claim tokens and
+# reservation references for the anonymous file-a-claim wizard. The internal
+# token must match orders' velaris.claims.internal-token (both default to the
+# local-dev value; override via env in prod).
+velaris:
+  orders:
+    base-url: http://orders.velaris.svc.cluster.local:9080
+    internal-token: ${ORDERS_INTERNAL_TOKEN:local-dev-internal-token}
