@@ -2,6 +2,16 @@
 server:
   port: 9040
 
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Cognito pool that issues admin JWTs for the /api/admin/** surface
+          # (session summaries, member-agreement packets — cross-org PII). The
+          # anonymous signup flow stays permitAll. Per-env COGNITO_ISSUER_URL.
+          issuer-uri: ${COGNITO_ISSUER_URL:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4atAJ9eRI}
+
 kafka:
   consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-onboarding}
   onboardingCompletedTopic: ${KAFKA_ONBOARDING_COMPLETED_TOPIC:velaris-onboarding-completed}
