@@ -31,6 +31,11 @@ boldsign:
 hubspot:
   api-key: ${HUBSPOT_API_KEY:}
   base-url: https://api.hubapi.com
+  webhook:
+    # HubSpot app client secret for X-HubSpot-Signature-v3 verification on the
+    # deal-closed webhook (creates orgs/contracts). While unset, signatures are
+    # NOT enforced (pre-launch gap). Set HUBSPOT_CLIENT_SECRET to activate.
+    client-secret: ${HUBSPOT_CLIENT_SECRET:}
 
 cognito:
   user-pool-id: ${COGNITO_USER_POOL_ID:}

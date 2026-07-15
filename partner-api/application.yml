@@ -14,6 +14,11 @@ kafka:
 
 hubspot:
   token: ${HUBSPOT_TOKEN:}
+  webhook:
+    # HubSpot app client secret for X-HubSpot-Signature-v3 verification on the
+    # deal-closed webhook (forwarded to organizations). Set on exactly one edge
+    # (see HubspotApi). While unset, signatures are NOT enforced (pre-launch gap).
+    client-secret: ${HUBSPOT_CLIENT_SECRET:}
 
 lodgify:
   host: ${LODGIFY_HOST:damage-protection.lodgifyintegration.com}
