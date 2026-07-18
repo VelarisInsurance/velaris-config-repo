@@ -6,9 +6,14 @@ audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqe
 server:
   port: 9170
 
+# Kafka is opt-in and OFF by default: CertificateIssuedEvent has no consumer
+# yet, the topic is unprovisioned in MSK, and the service has no broker
+# wiring. Enable per-env (KAFKA_ENABLED=true) when refund execution
+# (VEL-190/VEL-213) lands.
 kafka:
+  enabled: ${KAFKA_ENABLED:false}
   consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-refundable}
-  refundableCertificateTopic: ${KAFKA_REFUNDABLE_CERTIFICATE_TOPIC:velaris-v2-dev.refundable_certificates}
+  refundableCertificateTopic: ${KAFKA_REFUNDABLE_CERTIFICATE_TOPIC:velaris.refundable-certificate-issued}
 
 management:
   server:
