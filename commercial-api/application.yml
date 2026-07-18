@@ -7,10 +7,6 @@ audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqe
 server:
   port: 9130
 
-kafka:
-  consumerGroupId: ${KAFKA_CONSUMER_GROUP:velaris-commercial}
-  commercialApplicationTopic: ${KAFKA_COMMERCIAL_APPLICATION_TOPIC:velaris-v2-dev.commercial_applications}
-
 management:
   server:
     port: 9131
