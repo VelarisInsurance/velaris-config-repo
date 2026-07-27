@@ -6,6 +6,14 @@ audiences: ${COGNITO_AUDIENCE:20kkrgk5cghmtoc31jsq8mmshi,3qj47e7b7cd6augv7ginnqe
 
 server:
   port: 9180
+  # h2c disabled (overrides the shared fleet-wide http2.enabled=true):
+  # Tomcat 11.0.20 leaks the upgraded connection's processor + request
+  # buffers when the server's h2 idle timeout closes an h2c connection.
+  # velaris-notification's 60s flag poll hit that path once a minute
+  # (~33KB each) and OOM'd flags-api every ~2 days. In-cluster and
+  # ALB→target traffic is HTTP/1.1; nothing needs cleartext HTTP/2.
+  http2:
+    enabled: false
 
 kafka:
   flagChangedTopic: ${KAFKA_FLAG_CHANGED_TOPIC:velaris.flag-changed}
