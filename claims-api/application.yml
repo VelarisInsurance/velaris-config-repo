@@ -37,3 +37,12 @@ velaris:
   orders:
     base-url: http://orders.velaris.svc.cluster.local:9080
     internal-token: ${ORDERS_INTERNAL_TOKEN:local-dev-internal-token}
+  # velaris-policy-api internal owner-documents surface (VEL-568): resolves the
+  # Recorded Elections Extract (OA-1E) governing a stay for the guest-damage
+  # adjudication receipt gate. The token must match policy-api's
+  # velaris.billing.internal-token (both default to the local-dev value;
+  # override via env in prod).
+  policy-api:
+    base-url: http://policy-api.velaris.svc.cluster.local:9030
+  billing:
+    internal-token: ${BILLING_INTERNAL_TOKEN:local-dev-internal-token}
