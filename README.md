@@ -10,11 +10,17 @@ runtime configuration from this repo on startup and on refresh.
 velaris-config-repo/
   application.yml                 # shared defaults applied to ALL services
   <service-name>/
-    application.yml               # base config for that service (all envs)
-    application-dev.yml           # dev-only overrides   (optional)
-    application-staging.yml       # staging-only overrides (optional)
-    application-prod.yml          # prod-only overrides  (optional)
+    application.yml               # base config for that service (ALL envs)
 ```
+
+> **There are no per-environment files here, and adding one would do nothing.**
+> Every deployed service runs `SPRING_PROFILES_ACTIVE=aws` in *every* cluster —
+> dev, staging and prod alike (see `SPRING_PROFILES_ACTIVE` in each
+> `k8s/base/*/deployment.yml`; no overlay overrides it). Spring Cloud Config
+> only serves `application-{profile}.yml` for profiles the client actually
+> requests, so `application-dev.yml` / `application-prod.yml` would never be
+> read. See [Per-environment values](#per-environment-values) for the mechanism
+> that does work.
 
 Current services tracked here:
 
@@ -45,28 +51,78 @@ classpath, so `bootstrap.yml` files are ignored — the name that counts is the
 one set in `application.yml` / `application-{profile}.yml` (most services set
 it in `application-aws.yml`, next to the `spring.config.import` line).
 
-## Branching strategy: folder overlay, not branch-per-environment
+## Branching strategy: single branch, no per-environment config here
 
-We use a **single `main` branch** with environment-specific YAML files
-(`application-{env}.yml`) rather than a branch per environment.
-
-**Why folder overlay wins here**
+We use a **single `main` branch**, and this repo holds only values that are
+identical in every environment. Everything that differs per environment lives
+in `velaris-infrastructure` (see below), not here.
 
 - Promotion is a PR diff against `main`, not a cross-branch merge — easier to
   review, easier to revert.
 - One source of truth. No drift between `dev`/`staging`/`prod` branches.
-- Spring profile activation (`SPRING_PROFILES_ACTIVE=dev,prod,...`) does the
-  overlay at runtime, so the mechanism is already battle-tested.
 - Branch-per-env shines when you need *per-env access control* enforced by Git
   hosting. We get that via GitHub branch protection + CODEOWNERS on `main`
   instead.
 
-**When we'd revisit**
-
 If we ever need an environment to pin to an older config snapshot
 independently of `main` (e.g., a long-lived QA branch frozen at a release
-boundary), Spring Cloud Config's `label` parameter still lets us point that
-client at a specific Git ref without changing the layout above.
+boundary), Spring Cloud Config's `label` parameter lets us point that client
+at a specific Git ref without changing the layout above.
+
+## Per-environment values
+
+Because every environment runs the same `aws` profile, a per-env value can only
+come from one of two places, both outside this repo:
+
+1. **An env var set by the k8s overlay** —
+   `velaris-infrastructure/k8s/overlays/{dev,staging,prod}/<service>/kustomization.yml`.
+   The convention is a placeholder in `k8s/base/<service>/deployment.yml` that
+   each overlay replaces, e.g. `velaris-claims-files-SECRET_ENV`.
+2. **A key in that environment's Secrets Manager secret** —
+   `velaris/{env}/<service>/config`. Each service's `main()` reads every key in
+   that JSON and sets it as a **JVM system property** before Spring starts, so
+   `${SOME_KEY}` placeholders resolve from it.
+
+### The rule that matters when reviewing this repo
+
+> **Every `${VAR:default}` in this repo IS the production value** unless that
+> environment's k8s overlay or Secrets Manager secret sets `VAR`. There is no
+> profile that quietly swaps it out.
+
+So a dev-flavoured default here — a `-dev` bucket name, a `localhost` URL, a
+`local-dev-*` shared secret, a feature toggle that should only be on in dev —
+is a production defect, not a placeholder. Two live examples that this repo
+caused: prod `claims-api` resolved `S3_CLAIMS_BUCKET` to `velaris-claims-files-dev`
+(a bucket in the *dev* AWS account), and all four internal service-to-service
+tokens resolved to the literal `local-dev-internal-token` on internet-facing
+endpoints (VEL-615 / VEL-616).
+
+**When you add a `${VAR:default}` here, either** make the default safe for prod
+and let dev opt in via its overlay, **or** give it no default at all so a
+missing value fails startup loudly instead of silently doing the dev thing.
+
+## Property precedence (highest wins)
+
+Learned the hard way during the flags-api h2c incident (VEL-598), where a
+service-local override of a fleet-wide default here silently lost for weeks:
+
+1. JVM system properties — i.e. **Secrets Manager** keys, loaded in `main()`
+2. Container env vars — set by the k8s base/overlay
+3. **This repo, service file** — `<service>/application.yml`
+4. **This repo, shared file** — root `application.yml`
+5. The service's own `src/main/resources/application-aws.yml`
+6. The service's own `src/main/resources/application.yml`
+
+**Config-server values (3 and 4) outrank the service's own YAML (5 and 6).** A
+service cannot override a default set here by editing its own
+`application-aws.yml`; the only working seam is the service's folder in this
+repo.
+
+The corollary bites in the other direction too: the `spring.config.import` is
+`optional:` with `fail-fast: false`, so if config-server is unreachable at boot
+the service starts anyway on layers 5-6. Those local files are the silent
+fallback for a config-server outage, so they need prod-safe values as well —
+keep them in sync with what this repo sets.
 
 ## Adding configuration for a new service
 
@@ -78,11 +134,9 @@ client at a specific Git ref without changing the layout above.
    ```
    <service-name>/application.yml
    ```
-3. Add per-environment overrides only for keys that actually differ:
-   ```
-   <service-name>/application-dev.yml
-   <service-name>/application-prod.yml
-   ```
+3. For anything that differs per environment, do **not** add a file here — wire
+   an env var in `velaris-infrastructure` or a key in
+   `velaris/{env}/<service>/config`. See [Per-environment values](#per-environment-values).
 4. On the client side, the service's `spring.config.import` should already be:
    ```yaml
    spring:
@@ -91,52 +145,39 @@ client at a specific Git ref without changing the layout above.
    ```
 5. Open a PR. Once merged to `main`, trigger a refresh (see below).
 
-## Per-environment overrides
+## Secrets
 
-Spring's profile mechanism merges files in this order (later wins):
+Keep secrets out of this repo. Reference them via `${ENV_VAR}` placeholders and
+put the real values in `velaris/{env}/<service>/config` in Secrets Manager,
+which the service loads as system properties at startup.
 
-1. `application.yml` (root — global defaults across all services)
-2. `<service>/application.yml` (service base)
-3. `<service>/application-{profile}.yml` (env override)
-
-So to change the Mongo URI just for prod:
-
-```yaml
-# velaris-organizations/application-prod.yml
-spring:
-  data:
-    mongodb:
-      uri: ${MONGODB_URI_PROD}
-```
-
-Keep secrets out of this repo. Reference them via `${ENV_VAR}` placeholders
-and inject the actual values from the deployment environment (ECS task
-definition, GitHub Actions secret, etc.).
+A placeholder with an empty default (`${SOME_API_KEY:}`) means the feature is
+inert until the key is set — that is a deliberate, safe pattern. A placeholder
+with a *usable* dummy default (`local-dev-internal-token`,
+`dev-only-...-change-in-prod`) is not: it silently makes the dummy the
+production credential. Use an empty default and let the code fail closed.
 
 ## Triggering a config refresh after a change
 
-After your change is merged to `main`:
+**A merge to `main` does not reach running pods. Restart them.**
+
+The Spring Cloud Bus is disabled fleet-wide — the shared `application.yml` here
+sets `spring.cloud.bus.enabled: false`, because services carrying
+`spring-cloud-starter-bus-kafka` default the broker to `localhost:9092` and the
+AdminClient reconnect-spams past the liveness deadline until MSK SASL/IAM is
+wired up. So `POST /actuator/busrefresh` fans out to nobody, and clients pick up
+a change only on their next boot:
 
 ```bash
-# Refresh every client subscribed to the Spring Cloud Bus (Kafka).
-curl -u $CONFIG_CLIENT_USERNAME:$CONFIG_CLIENT_PASSWORD \
-     -X POST https://config.velarisinsurance.com/actuator/busrefresh
+kubectl -n velaris rollout restart deploy/<service>
 ```
 
-This publishes a `RefreshRemoteApplicationEvent` to the `springCloudBus`
-Kafka topic. Every client with `spring-cloud-starter-bus-kafka` on the
-classpath receives it and re-evaluates `@RefreshScope` beans without a
-restart.
+This bit real work once: a config-repo fix for the flags-api h2c leak (VEL-598)
+was merged and assumed live for days before anyone restarted the pods.
 
-To refresh a single instance only (rarely useful):
-
-```bash
-curl -X POST https://<service-host>/actuator/refresh
-```
-
-If a property is read into a non-`@RefreshScope` bean (e.g., a static field or
-a connection pool created at startup), the bean will keep the old value until
-the pod is restarted. When in doubt, restart.
+Even with the bus enabled, a property read into a non-`@RefreshScope` bean (a
+static field, a connection pool, a constructor-injected `@Value`) keeps its old
+value until restart. When in doubt, restart.
 
 ## Audit log
 
