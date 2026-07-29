@@ -18,7 +18,12 @@ kafka:
 
 aws:
   s3:
-    bucket: ${S3_CLAIMS_BUCKET:velaris-claims-files-dev}
+    # No default: S3_CLAIMS_BUCKET is set on every deployed pod by the k8s base
+    # deployment (velaris-claims-files-SECRET_ENV, resolved per overlay). This
+    # previously defaulted to the dev bucket, so prod claim-evidence uploads
+    # targeted a bucket in the DEV account and 403'd against the prod pod role
+    # (VEL-615). Failing startup beats silently writing to the wrong account.
+    bucket: ${S3_CLAIMS_BUCKET}
     region: ${AWS_REGION:us-east-1}
 
 anthropic:
@@ -31,18 +36,23 @@ management:
 
 # velaris-orders internal claim-lookup surface: resolves claim tokens and
 # reservation references for the anonymous file-a-claim wizard. The internal
-# token must match orders' velaris.claims.internal-token (both default to the
-# local-dev value; override via env in prod).
+# token must match orders' velaris.claims.internal-token.
+#
+# VELARIS_INTERNAL_TOKEN is the fleet-wide fallback: setting that one variable
+# on claims-api, orders, policy-api and partner-api rotates every
+# internal-token pair together (a per-pair name still wins where set). These
+# peer endpoints are permitAll() behind an internet-facing ALB, so the token is
+# the ONLY credential — the local-dev default must never survive into a
+# deployed environment (VEL-616).
 velaris:
   orders:
     base-url: http://orders.velaris.svc.cluster.local:9080
-    internal-token: ${ORDERS_INTERNAL_TOKEN:local-dev-internal-token}
+    internal-token: ${ORDERS_INTERNAL_TOKEN:${VELARIS_INTERNAL_TOKEN:local-dev-internal-token}}
   # velaris-policy-api internal owner-documents surface (VEL-568): resolves the
   # Recorded Elections Extract (OA-1E) governing a stay for the guest-damage
   # adjudication receipt gate. The token must match policy-api's
-  # velaris.billing.internal-token (both default to the local-dev value;
-  # override via env in prod).
+  # velaris.billing.internal-token.
   policy-api:
     base-url: http://policy-api.velaris.svc.cluster.local:9030
   billing:
-    internal-token: ${BILLING_INTERNAL_TOKEN:local-dev-internal-token}
+    internal-token: ${BILLING_INTERNAL_TOKEN:${VELARIS_INTERNAL_TOKEN:local-dev-internal-token}}

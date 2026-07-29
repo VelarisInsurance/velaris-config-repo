@@ -26,7 +26,10 @@ commercial:
     ttl-days: 30
     token-secret: ${COMMERCIAL_DRAFT_TOKEN_SECRET:}
   pdf:
-    s3-bucket: ${COMMERCIAL_PDF_BUCKET:velaris-commercial-pdfs-dev}
+    # No default — the dev bucket as a fleet-wide default is how prod services
+    # end up writing into the DEV account (VEL-615). Set per pod by the k8s
+    # base deployment.
+    s3-bucket: ${COMMERCIAL_PDF_BUCKET}
     s3-prefix: applications/
   boldsign:
     enabled: ${COMMERCIAL_BOLDSIGN_ENABLED:false}
